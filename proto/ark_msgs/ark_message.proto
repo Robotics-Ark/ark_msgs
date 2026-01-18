@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+// Ark message that is sent on each channel.
+message ArkMessage {
+  uint64 timestamp = 1;
+  string payload_msg_type = 2;
+  bytes payload = 3;
+}

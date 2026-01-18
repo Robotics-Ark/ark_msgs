@@ -18,8 +18,34 @@ Documentation for each message type supported in `ark_msgs` can be found below.
 
 ## Table of Contents
 
+- [Core](#core)
 - [Geometry](#geometry)
 - [Sensor](#sensor)
+
+## Core
+
+Core messages used by Ark.
+
+### ArkMessage
+
+This is the message that is actually sent across the network.
+
+##### Fields
+
+- `timestamp`: the timestamp when the message was sent
+- `payload_msg_type`: the type of the payload message as a string
+- `payload`: the payload of the message as bytes
+
+##### Helpers
+
+- `ArkMessage.pack(clock, msg)`  
+  Packs a message as an ArkMessage with the timestamp from the clock (`ark.clock.Clock`).
+- `ArkMessage.from_sample(sample)`
+  Retreive the `ArkMessage` from the given Zenoh sample. 
+
+##### Usage
+
+`ArkMessage` is not designed for user code, so should not be used.
 
 ## Geometry
 
