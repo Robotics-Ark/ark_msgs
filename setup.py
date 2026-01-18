@@ -1,16 +1,11 @@
-from pathlib import Path
-import subprocess
 import sys
-
+import subprocess
+from pathlib import Path
 from setuptools import setup
 from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop as _develop
 
-
-# We compile only the ark_msgs protos, using proto/ark_msgs as the include root.
-# This makes generated outputs land directly in src/ark_msgs/_generated/
-# e.g. proto/ark_msgs/rotation.proto -> src/ark_msgs/_generated/rotation_pb2.py
-PKG_PROTO_ROOT = Path("proto") / "ark_msgs"
+PKG_PROTO_ROOT = Path("proto")
 OUT_ROOT = Path("src") / "ark_msgs" / "_generated"
 
 
@@ -44,7 +39,6 @@ class build_py(_build_py):
 
 class develop(_develop):
     def run(self):
-        # For legacy editable installs / `python setup.py develop`
         compile_protos()
         super().run()
 
