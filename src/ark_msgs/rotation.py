@@ -13,7 +13,7 @@ def _as_scipy(r: ProtoOrScipyRotation) -> Rot:
 
 
 def _as_proto(r: ProtoOrScipyRotation) -> Rotation:
-    """Convert to ark_msgs.Rotation."""
+    """Convert to ark_msgs.rotation.Rotation."""
     x, y, z, w = r.as_quat().reshape(4).astype(np.float32)
     return Rotation(x=x, y=y, z=z, w=w)
 

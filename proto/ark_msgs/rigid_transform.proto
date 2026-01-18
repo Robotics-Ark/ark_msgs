@@ -6,7 +6,7 @@ import "ark_msgs/translation.proto";
 import "ark_msgs/rotation.proto";
 
 // A rigid transform between two coordinate frames.
-message Transform {
+message RigidTransform {
   Translation translation = 1;
   Rotation rotation = 2;
   string child_id = 3;

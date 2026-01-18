@@ -13,7 +13,7 @@ def _as_array(t: ProtoOrIterableTranslation) -> np.ndarray:
 
 
 def _as_proto(t: ProtoOrIterableTranslation) -> Translation:
-    """Convert to ark_msgs.Translation."""
+    """Convert to ark_msgs.translation.Translation."""
     if isinstance(t, Translation):
         return t
     t = np.asarray(t, dtype=np.float32).reshape(3)
