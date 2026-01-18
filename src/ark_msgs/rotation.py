@@ -2,7 +2,7 @@ import numpy as np
 from typing import Iterable, Any
 from scipy.spatial.transform import Rotation as Rot
 
-from ._generated.rotation_pb2 import Rotation
+from .rotation_pb2 import Rotation
 
 
 def _to_rot(self: Rotation) -> Rot:

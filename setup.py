@@ -6,7 +6,6 @@ from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop as _develop
 
 PKG_PROTO_ROOT = Path("proto")
-OUT_ROOT = Path("src") / "ark_msgs" / "_generated"
 
 
 def compile_protos() -> None:
@@ -14,20 +13,17 @@ def compile_protos() -> None:
     if not protos:
         return
 
-    OUT_ROOT.mkdir(parents=True, exist_ok=True)
-    init_file = OUT_ROOT / "__init__.py"
-    init_file.touch()
-    with open(init_file, "a") as f:
-        f.write("# Auto-generated package initializer. Do not edit.\n")
-
     cmd = [
         sys.executable,
         "-m",
         "grpc_tools.protoc",
+        # IMPORTANT:
+        # Use src as python_out so generated modules keep correct package imports,
+        # e.g. `from ark_msgs._generated import translation_pb2 ...`
         f"-I{PKG_PROTO_ROOT}",
-        f"--python_out={OUT_ROOT}",
+        f"--python_out=src",
         # If this fails on your machine with protoc-gen-pyi missing, delete this line.
-        f"--pyi_out={OUT_ROOT}",
+        f"--pyi_out=src",
         *[str(p) for p in protos],
     ]
     subprocess.check_call(cmd)

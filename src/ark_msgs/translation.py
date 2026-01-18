@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Iterable
-from ._generated.translation_pb2 import Translation
+from .translation_pb2 import Translation
 
 
 @classmethod

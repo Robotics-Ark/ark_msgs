@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/translation.proto";
+import "ark_msgs/rotation.proto";
+
+// A rigid transform between two coordinate frames.
+//
+// Interpreting the fields:
+// - parent_id: source frame
+// - child_id: target frame
+// - translation, rotation: pose of child frame expressed in parent frame
+message Transform {
+  Translation translation = 1;
+  Rotation rotation = 2;
+  string child_id = 3;
+  string parent_id = 4;
+}
