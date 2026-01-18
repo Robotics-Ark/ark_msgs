@@ -1,11 +1,13 @@
 import numpy as np
 from ark_msgs.translation import Translation
 from ark_msgs.rotation import Rotation
-from .rigid_transform_pb2 import RigidTransform
 from scipy.spatial.transform import (
     RigidTransform as ScipyRigidTransform,
     Rotation as ScipyRotation,
 )
+
+# rigid_transform_pb2.py is generated from rigid_transform.proto
+from .rigid_transform_pb2 import RigidTransform
 
 ProtoOrScipyRigidTransform = RigidTransform | ScipyRigidTransform
 

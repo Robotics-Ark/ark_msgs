@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Iterable
 from scipy.spatial.transform import Rotation as Rot
+
+# rotation_pb2.py is generated from rotation.proto
 from .rotation_pb2 import Rotation
 
 ProtoOrScipyRotation = Rotation | Rot
@@ -108,7 +110,7 @@ def as_davenport(
     order: str,
     degrees: bool = False,
     *,
-    suppress_warnings: bool = False
+    suppress_warnings: bool = False,
 ) -> np.ndarray:
     """Represent as Davenport angles."""
     return _as_scipy(self).as_davenport(
