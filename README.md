@@ -16,10 +16,10 @@ Monkeypatching allows us to extend the `Rotation` message with a SciPy-compatibl
 
 Documentation for each message type supported in `ark_msgs` can be found below.
 
-## TOC
+## Table of Contents
 
-- [Geometry](https://github.com/Robotics-Ark/ark_msgs/tree/master#geometry)
-- [Sensor](https://github.com/Robotics-Ark/ark_msgs/tree/master#sensor)
+- [Geometry](#geometry)
+- [Sensor](#sensor)
 
 ## Geometry
 
