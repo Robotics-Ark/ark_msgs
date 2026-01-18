@@ -6,11 +6,6 @@ import "ark_msgs/translation.proto";
 import "ark_msgs/rotation.proto";
 
 // A rigid transform between two coordinate frames.
-//
-// Interpreting the fields:
-// - parent_id: source frame
-// - child_id: target frame
-// - translation, rotation: pose of child frame expressed in parent frame
 message Transform {
   Translation translation = 1;
   Rotation rotation = 2;

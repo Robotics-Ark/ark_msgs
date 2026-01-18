@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Iterable, Any
+from typing import Iterable
 from scipy.spatial.transform import Rotation as Rot
 from .rotation_pb2 import Rotation
 
