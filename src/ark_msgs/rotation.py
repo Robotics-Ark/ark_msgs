@@ -1,13 +1,21 @@
 import numpy as np
 from typing import Iterable, Any
 from scipy.spatial.transform import Rotation as Rot
-
 from .rotation_pb2 import Rotation
 
+ProtoOrScipyRotation = Rotation | Rot
 
-def _to_rot(self: Rotation) -> Rot:
-    # Protobuf stores [x, y, z, w] (scalar-last), same as SciPy default.
-    return Rot.from_quat([float(self.x), float(self.y), float(self.z), float(self.w)])
+
+def _as_scipy(r: ProtoOrScipyRotation) -> Rot:
+    """Convert to scipy.spatial.transform.Rotation."""
+    x, y, z, w = r.as_quat().reshape(4).astype(np.float32)
+    return Rot.from_quat([x, y, z, w])
+
+
+def _as_proto(r: ProtoOrScipyRotation) -> Rotation:
+    """Convert to ark_msgs.Rotation."""
+    x, y, z, w = r.as_quat().reshape(4).astype(np.float32)
+    return Rotation(x=x, y=y, z=z, w=w)
 
 
 @classmethod
@@ -17,195 +25,135 @@ def from_quat(cls, quat: Iterable[float], *, scalar_first: bool = False) -> Rota
 
     Parameters match SciPy's Rotation.from_quat with scalar_first support.
     """
-    q = np.asarray(quat, dtype=np.float64).reshape(4)
-    if scalar_first:
-        # input is [w, x, y, z] -> convert to [x, y, z, w]
-        w, x, y, z = map(float, q)
-        return cls(x=x, y=y, z=z, w=w)
-    else:
-        # input is [x, y, z, w]
-        x, y, z, w = map(float, q)
-        return cls(x=x, y=y, z=z, w=w)
+    quat = np.asarray(quat, dtype=np.float32).reshape(4)
+    x, y, z, w = Rot.from_quat(quat, scalar_first=scalar_first).as_quat()
+    return cls(x=x, y=y, z=z, w=w)
 
 
 @classmethod
 def from_matrix(cls, matrix: Iterable[Iterable[float]]) -> Rotation:
     """Initialize from rotation matrix."""
-    m = np.asarray(matrix, dtype=np.float64).reshape(3, 3)
-    r = Rot.from_matrix(m)
-    x, y, z, w = map(float, r.as_quat())
-    return cls(x=x, y=y, z=z, w=w)
+    matrix = np.asarray(matrix, dtype=np.float32).reshape(3, 3)
+    return _as_proto(Rot.from_matrix(matrix))
 
 
 @classmethod
 def from_rotvec(cls, rotvec: Iterable[float], degrees: bool = False) -> Rotation:
     """Initialize from rotation vectors."""
-    v = np.asarray(rotvec, dtype=np.float64).reshape(3)
-    r = Rot.from_rotvec(v, degrees=degrees)
-    x, y, z, w = map(float, r.as_quat())
-    return cls(x=x, y=y, z=z, w=w)
+    rotvec = np.asarray(rotvec, dtype=np.float32).reshape(3)
+    return _as_proto(Rot.from_rotvec(rotvec, degrees=degrees))
 
 
 @classmethod
 def from_mrp(cls, mrp: Iterable[float]) -> Rotation:
     """Initialize from Modified Rodrigues Parameters (MRPs)."""
-    p = np.asarray(mrp, dtype=np.float64).reshape(3)
-    r = Rot.from_mrp(p)
-    x, y, z, w = map(float, r.as_quat())
-    return cls(x=x, y=y, z=z, w=w)
+    mrp = np.asarray(mrp, dtype=np.float32).reshape(3)
+    return _as_proto(Rot.from_mrp(mrp))
 
 
 @classmethod
-def from_euler(cls, seq: str, angles: Any, degrees: bool = False) -> Rotation:
+def from_euler(
+    cls, seq: str, angles: Iterable[float], degrees: bool = False
+) -> Rotation:
     """Initialize from Euler angles."""
-    r = Rot.from_euler(seq, angles, degrees=degrees)
-    x, y, z, w = map(float, r.as_quat())
-    return cls(x=x, y=y, z=z, w=w)
+    return _as_proto(Rot.from_euler(seq, angles, degrees=degrees))
 
 
 @classmethod
 def from_davenport(
     cls,
-    axes: Any,
-    order: Any,
-    angles: Any,
+    axes: Iterable[int] | int,
+    order: str,
+    angles: Iterable[float] | float,
     degrees: bool = False,
-    **kwargs: Any,
 ) -> Rotation:
-    """
-    Initialize from Davenport angles.
-
-    This passes through to scipy.spatial.transform.Rotation.from_davenport if present.
-    """
-    if not hasattr(Rot, "from_davenport"):
-        raise NotImplementedError(
-            "scipy.spatial.transform.Rotation.from_davenport is not available "
-            "in your installed SciPy version."
-        )
-    r = Rot.from_davenport(axes, order, angles, degrees=degrees, **kwargs)
-    x, y, z, w = map(float, r.as_quat())
-    return cls(x=x, y=y, z=z, w=w)
+    """Initialize from Davenport angles."""
+    return _as_proto(Rot.from_davenport(axes, order, angles, degrees=degrees))
 
 
 def as_quat(
     self: Rotation, canonical: bool = False, *, scalar_first: bool = False
 ) -> np.ndarray:
-    """
-    Represent as quaternions.
-
-    Matches SciPy's Rotation.as_quat with canonical and scalar_first support.
-    """
-    r = _to_rot(self)
-    q = r.as_quat(canonical=canonical)  # SciPy returns scalar-last [x, y, z, w]
-    if scalar_first:
-        # [x, y, z, w] -> [w, x, y, z]
-        q = np.asarray([q[3], q[0], q[1], q[2]], dtype=q.dtype)
-    return q
+    """Represent as quaternions."""
+    return _as_scipy(self).as_quat(canonical=canonical, scalar_first=scalar_first)
 
 
 def as_matrix(self: Rotation) -> np.ndarray:
     """Represent as rotation matrix."""
-    return _to_rot(self).as_matrix()
+    return _as_scipy(self).as_matrix()
 
 
 def as_rotvec(self: Rotation, degrees: bool = False) -> np.ndarray:
     """Represent as rotation vectors."""
-    return _to_rot(self).as_rotvec(degrees=degrees)
+    return _as_scipy(self).as_rotvec(degrees=degrees)
 
 
 def as_mrp(self: Rotation) -> np.ndarray:
     """Represent as Modified Rodrigues Parameters (MRPs)."""
-    return _to_rot(self).as_mrp()
+    return _as_scipy(self).as_mrp()
 
 
-def as_euler(self: Rotation, seq: str, degrees: bool = False) -> np.ndarray:
+def as_euler(
+    self: Rotation, seq: str, degrees: bool = False, *, suppress_warnings: bool = False
+) -> np.ndarray:
     """Represent as Euler angles."""
-    return _to_rot(self).as_euler(seq, degrees=degrees)
+    return _as_scipy(self).as_euler(
+        seq, degrees=degrees, suppress_warnings=suppress_warnings
+    )
 
 
 def as_davenport(
-    self: Rotation, axes: Any, order: Any, degrees: bool = False, **kwargs: Any
+    self: Rotation,
+    axes: Iterable[int] | int,
+    order: str,
+    degrees: bool = False,
+    *,
+    suppress_warnings: bool = False
 ) -> np.ndarray:
-    """
-    Represent as Davenport angles.
-
-    This passes through to scipy.spatial.transform.Rotation.as_davenport if present.
-    """
-    r = _to_rot(self)
-    if not hasattr(r, "as_davenport"):
-        raise NotImplementedError(
-            "scipy.spatial.transform.Rotation.as_davenport is not available "
-            "in your installed SciPy version."
-        )
-    return r.as_davenport(axes, order, degrees=degrees, **kwargs)
+    """Represent as Davenport angles."""
+    return _as_scipy(self).as_davenport(
+        axes, order, degrees=degrees, suppress_warnings=suppress_warnings
+    )
 
 
 def inv(self: Rotation) -> Rotation:
     """Invert this rotation."""
-    r_inv = _to_rot(self).inv()
-    x, y, z, w = map(float, r_inv.as_quat())
-    return Rotation(x=x, y=y, z=z, w=w)
+    return _as_proto(_as_scipy(self).inv())
 
 
 def magnitude(self: Rotation) -> float:
     """Get the magnitude of the rotation (in radians)."""
-    return float(_to_rot(self).magnitude())
-
-
-def approx_equal(
-    self: Rotation, other: Rotation, atol: float = 1e-8, **kwargs: Any
-) -> bool:
-    """
-    Determine if another rotation is approximately equal to this one.
-
-    Uses SciPy's approx_equal when available; otherwise falls back to comparing
-    the relative rotation magnitude against atol (radians).
-    """
-    r1 = _to_rot(self)
-    r2 = _to_rot(other)
-    if hasattr(r1, "approx_equal"):
-        return bool(r1.approx_equal(r2, atol=atol, **kwargs))
-    rel = r1.inv() * r2
-    return bool(rel.magnitude() <= atol)
+    return float(_as_scipy(self).magnitude())
 
 
 @classmethod
-def identity(cls, num: int | None = None) -> Rotation | list[Rotation]:
-    """
-    Get identity rotation(s).
-
-    If num is None: returns a single Rotation message.
-    If num is an int: returns a list of Rotation messages of length num.
-    """
-    r = Rot.identity(num=num)
-    q = r.as_quat()
-    if num is None:
-        x, y, z, w = map(float, q)
-        return cls(x=x, y=y, z=z, w=w)
-    out: list[Rotation] = []
-    for qi in np.asarray(q):
-        x, y, z, w = map(float, qi)
-        out.append(cls(x=x, y=y, z=z, w=w))
-    return out
+def identity(cls) -> Rotation:
+    """Get identity rotation."""
+    return _as_proto(Rot.identity())
 
 
 @classmethod
-def random(cls, num: int | None = None, rng: Any = None) -> Rotation | list[Rotation]:
-    """
-    Generate uniformly distributed rotations.
+def random(cls, rng: np.random.Generator | int | None = None) -> Rotation:
+    """Generate uniformly distributed rotations."""
+    return _as_proto(Rot.random(random_state=rng))
 
-    Mimics SciPy's Rotation.random; `rng` is passed as SciPy's `random_state`.
+
+def __mul__(self: Rotation, other: ProtoOrScipyRotation) -> Rotation:
     """
-    r = Rot.random(num=num, random_state=rng)
-    q = r.as_quat()
-    if num is None:
-        x, y, z, w = map(float, q)
-        return cls(x=x, y=y, z=z, w=w)
-    out: list[Rotation] = []
-    for qi in np.asarray(q):
-        x, y, z, w = map(float, qi)
-        out.append(cls(x=x, y=y, z=z, w=w))
-    return out
+    Compose rotations (SciPy semantics).
+
+    r = r1 * r2 means: apply r2, then apply r1.
+    """
+    return _as_proto(_as_scipy(self) * _as_scipy(other))
+
+
+def __rmul__(self: Rotation, other: ProtoOrScipyRotation) -> Rotation:
+    """
+    Compose rotations (SciPy semantics), reversed operands.
+    r = r2 * r1 means: apply r1, then apply r2.
+    """
+    # Handles cases where the left operand doesn't know how to multiply.
+    return _as_proto(_as_scipy(other) * _as_scipy(self))
 
 
 # Monkeypatch onto the generated protobuf class (only if missing)
@@ -239,12 +187,16 @@ if not hasattr(Rotation, "inv"):
     Rotation.inv = inv
 if not hasattr(Rotation, "magnitude"):
     Rotation.magnitude = magnitude
-if not hasattr(Rotation, "approx_equal"):
-    Rotation.approx_equal = approx_equal
 
 if not hasattr(Rotation, "identity"):
     Rotation.identity = identity
 if not hasattr(Rotation, "random"):
     Rotation.random = random
+
+if not hasattr(Rotation, "__mul__"):
+    Rotation.__mul__ = __mul__
+if not hasattr(Rotation, "__rmul__"):
+    Rotation.__rmul__ = __rmul__
+
 
 __all__ = ["Rotation"]
