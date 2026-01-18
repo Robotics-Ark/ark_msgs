@@ -17,12 +17,8 @@ def compile_protos() -> None:
         sys.executable,
         "-m",
         "grpc_tools.protoc",
-        # IMPORTANT:
-        # Use src as python_out so generated modules keep correct package imports,
-        # e.g. `from ark_msgs._generated import translation_pb2 ...`
         f"-I{PKG_PROTO_ROOT}",
         f"--python_out=src",
-        # If this fails on your machine with protoc-gen-pyi missing, delete this line.
         f"--pyi_out=src",
         *[str(p) for p in protos],
     ]

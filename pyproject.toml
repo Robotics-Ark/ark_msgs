@@ -4,9 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ark_msgs"
-version = "0.1.0"
+version = "1.0.0"
 requires-python = ">=3.9"
+description = "Protobuf-based message definitions and Python helpers for the Ark framework."
 dependencies = ["protobuf>=4.21", "numpy<2.0", "scipy"]
+
+authors = [
+  { name = "Christopher E. Mower" }
+]
+
+maintainers = [
+  { name = "Christopher E. Mower" }
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
