@@ -1,5 +1,7 @@
 import numpy as np
 from typing import Iterable
+
+# translation_pb2.py is generated from translation.proto
 from .translation_pb2 import Translation
 
 ProtoOrIterableTranslation = Translation | Iterable[float]
