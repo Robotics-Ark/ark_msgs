@@ -15,8 +15,10 @@ def compile_protos() -> None:
         return
 
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
-    # Make _generated a package so relative imports work cleanly
-    (OUT_ROOT / "__init__.py").touch()
+    init_file = OUT_ROOT / "__init__.py"
+    init_file.touch()
+    with open(init_file, "a") as f:
+        f.write("# Auto-generated package initializer. Do not edit.\n")
 
     cmd = [
         sys.executable,
