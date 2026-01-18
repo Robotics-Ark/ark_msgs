@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ark_msgs"
 version = "1.0.0"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 description = "Protobuf-based message definitions and Python helpers for the Ark framework."
-dependencies = ["protobuf>=4.21", "numpy<2.0", "scipy"]
+dependencies = ["protobuf>=4.21", "numpy", "scipy"]
 
 authors = [
   { name = "Christopher E. Mower" }
