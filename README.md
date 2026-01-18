@@ -56,7 +56,7 @@ The helper methods for geometry message types are inspired and try to follow (as
 
 `Translation` represents a 3D translation vector with `x`, `y`, and `z` components.
 
-#### Fields
+##### Fields
 
 - `x`: X component.
 - `y`: Y component.
@@ -64,7 +64,7 @@ The helper methods for geometry message types are inspired and try to follow (as
 
 All numeric fields use `float32`.
 
-#### Helpers
+##### Helpers
 
 - `Translation.from_array(array)`  
   Create a `Translation` from an array-like of shape `(3,)`.
@@ -78,7 +78,7 @@ All numeric fields use `float32`.
 - `t1 - t2`, `t1 - array_like`, `array_like - t1`  
   Vector subtraction (returns `Translation`).
 
-#### Usage
+##### Usage
 
 ```python
 import numpy as np
@@ -98,7 +98,7 @@ t5 = np.array([0.0, 1.0, 0.0], dtype=np.float32) + t1
 
 `Rotation` represents a 3D rotation as a unit quaternion with components `x`, `y`, `z`, and `w`.
 
-#### Fields
+##### Fields
 
 - `x`: Quaternion x component.
 - `y`: Quaternion y component.
@@ -107,7 +107,7 @@ t5 = np.array([0.0, 1.0, 0.0], dtype=np.float32) + t1
 
 All numeric fields use `float32`.
 
-#### Helpers
+##### Helpers
 
 - `Rotation.from_quat(quat, scalar_first=False)`  
   Create from a quaternion. Accepts `[x, y, z, w]` by default, or `[w, x, y, z]` if `scalar_first=True`.
@@ -161,7 +161,7 @@ All numeric fields use `float32`.
   Compose rotations using SciPy semantics: `r = r1 * r2` applies `r2` first, then `r1`.
   The result is always an `ark_msgs.Rotation`.
 
-#### Usage
+##### Usage
 
 ```python
 import numpy as np
@@ -198,14 +198,14 @@ r_rand = Rotation.random(rng=np.random.default_rng(0))
 
 `RigidTransform` represents a rigid transform (translation + rotation) between two coordinate frames.
 
-#### Fields
+##### Fields
 
 - `translation`: Translation component (`ark_msgs.Translation`).
 - `rotation`: Rotation component (`ark_msgs.Rotation`).
 - `child_id`: Child frame ID.
 - `parent_id`: Parent frame ID.
 
-#### Helpers
+##### Helpers
 
 - `RigidTransform.from_matrix(matrix, child_id="child", parent_id="parent")`  
   Create from a 4×4 homogeneous transform matrix.
@@ -245,7 +245,7 @@ r_rand = Rotation.random(rng=np.random.default_rng(0))
 - `t.inv()`  
   Invert the transform (swaps `parent_id` and `child_id`).
 
-#### Usage
+##### Usage
 
 ```python
 import numpy as np
@@ -286,7 +286,7 @@ Common sensor message types.
 
 `JointState` represents the joint states for a robot at an instance in time. 
 
-#### Fields
+##### Fields
 
 - `name`: Joint names.
 - `position`: Joint positions (e.g. radians or meters).
@@ -297,7 +297,7 @@ Common sensor message types.
 All numeric fields use `float32`. 
 Elements at the same index across fields refer to the same joint.
 
-#### Usage
+##### Usage
 
 ```python
 from ark_msgs.joint_state import JointState
