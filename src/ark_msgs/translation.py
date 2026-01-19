@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Iterable
+from ark_msgs.registry import msgs
 
 # translation_pb2.py is generated from translation.proto
 from .translation_pb2 import Translation
@@ -90,5 +91,6 @@ if not hasattr(Translation, "__sub__"):
 if not hasattr(Translation, "__rsub__"):
     Translation.__rsub__ = __rsub__
 
+msgs.register_item(Translation)
 
 __all__ = ["Translation"]
