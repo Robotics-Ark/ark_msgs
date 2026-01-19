@@ -48,6 +48,24 @@ This is the message that is actually sent across the network.
 
 `ArkMessage` is not designed for user code, so should not be used.
 
+### DataRecord
+
+A single data record used to save data recieved by Ark nodes.
+
+##### Fields
+
+- `src_node_name`: the name of the source node
+- `dst_node_name`: the name of the destination node
+- `channel`: the name of the channel that the message was sent across
+- `sent_time`: the timestamp when the message was sent
+- `recv_time`: the timestamp when the message was recieved
+- `payload_msg_type`: the type of the payload message as a string
+- `payload`: the payload of the message as bytes
+
+##### Usage
+
+`DataRecord` is not designed for user code, so should not be used.
+
 ## Geometry
 
 Common message types involving geometry calculations.
