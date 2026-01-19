@@ -6,8 +6,11 @@ from ark_msgs.ark_message_pb2 import ArkMessage
 
 
 @classmethod
-def pack(cls: type[ArkMessage], clock: Clock, msg: Message) -> ArkMessage:
+def pack(
+    cls: type[ArkMessage], src_node_name: str, clock: Clock, msg: Message
+) -> ArkMessage:
     return cls(
+        src_node_name=src_node_name,
         timestamp=clock.now(),
         payload_msg_type=msg.DESCRIPTOR.full_name,
         payload=msg.SerializeToString(),

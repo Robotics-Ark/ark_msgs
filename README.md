@@ -32,6 +32,7 @@ This is the message that is actually sent across the network.
 
 ##### Fields
 
+- `src_node_name`: the name of the source node
 - `timestamp`: the timestamp when the message was sent
 - `payload_msg_type`: the type of the payload message as a string
 - `payload`: the payload of the message as bytes
