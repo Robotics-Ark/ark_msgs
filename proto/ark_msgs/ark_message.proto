@@ -4,7 +4,8 @@ package ark_msgs;
 
 // Ark message that is sent on each channel.
 message ArkMessage {
-  uint64 timestamp = 1;
-  string payload_msg_type = 2;
-  bytes payload = 3;
+  string src_node_name = 1;
+  uint64 timestamp = 2;
+  string payload_msg_type = 3;
+  bytes payload = 4;
 }
