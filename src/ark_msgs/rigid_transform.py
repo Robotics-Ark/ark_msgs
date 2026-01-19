@@ -5,6 +5,7 @@ from scipy.spatial.transform import (
     RigidTransform as ScipyRigidTransform,
     Rotation as ScipyRotation,
 )
+from ark_msgs.registry import msgs
 
 # rigid_transform_pb2.py is generated from rigid_transform.proto
 from .rigid_transform_pb2 import RigidTransform
@@ -183,5 +184,7 @@ if not hasattr(RigidTransform, "__rmul__"):
     RigidTransform.__rmul__ = __rmul__
 if not hasattr(RigidTransform, "inv"):
     RigidTransform.inv = inv
+
+msgs.register_item(RigidTransform)
 
 __all__ = ["RigidTransform"]

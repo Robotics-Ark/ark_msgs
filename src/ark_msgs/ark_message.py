@@ -1,6 +1,6 @@
 import zenoh
 from ark.clock import Clock
-from ark_msgs import msgs
+from ark_msgs.registry import msgs
 from google.protobuf.message import Message
 from ark_msgs.ark_message_pb2 import ArkMessage
 

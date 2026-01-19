@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Iterable
 from scipy.spatial.transform import Rotation as Rot
+from ark_msgs.registry import msgs
 
 # rotation_pb2.py is generated from rotation.proto
 from .rotation_pb2 import Rotation
@@ -200,5 +201,6 @@ if not hasattr(Rotation, "__mul__"):
 if not hasattr(Rotation, "__rmul__"):
     Rotation.__rmul__ = __rmul__
 
+msgs.register_item(Rotation)
 
 __all__ = ["Rotation"]
