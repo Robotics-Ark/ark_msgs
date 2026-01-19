@@ -32,39 +32,18 @@ This is the message that is actually sent across the network.
 
 ##### Fields
 
+- `EndPointType`: enum for end point types 
+- `endpoint_type`: the end point type that is handling the message
 - `src_node_name`: the name of the source node
-- `timestamp`: the timestamp when the message was sent
-- `payload_msg_type`: the type of the payload message as a string
+- `dst_node_name`: the name of the destination node
+- `sent_timestamp`: the timestamp when the message was sent
+- `recv_timestamp`: the timestamp when the message was recieved
+- `msg_type`: the type of the payload message as a string
 - `payload`: the payload of the message as bytes
-
-##### Helpers
-
-- `ArkMessage.pack(clock, msg)`  
-  Packs a message as an ArkMessage with the timestamp from the clock (`ark.clock.Clock`).
-- `ArkMessage.from_sample(sample)`
-  Retreive the `ArkMessage` from the given Zenoh sample. 
 
 ##### Usage
 
 `ArkMessage` is not designed for user code, so should not be used.
-
-### DataRecord
-
-A single data record used to save data recieved by Ark nodes.
-
-##### Fields
-
-- `src_node_name`: the name of the source node
-- `dst_node_name`: the name of the destination node
-- `channel`: the name of the channel that the message was sent across
-- `sent_time`: the timestamp when the message was sent
-- `recv_time`: the timestamp when the message was recieved
-- `payload_msg_type`: the type of the payload message as a string
-- `payload`: the payload of the message as bytes
-
-##### Usage
-
-`DataRecord` is not designed for user code, so should not be used.
 
 ## Geometry
 
