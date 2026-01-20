@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/rotation.proto";
+import "ark_msgs/translation.proto";
+
+// Inertial Measurement Unit data.
+message Imu {
+  Rotation orientation = 1;
+  Translation angular_velocity = 2;
+  Translation linear_acceleration = 3;
+}

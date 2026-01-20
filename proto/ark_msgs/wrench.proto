@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ark_msgs;
+
+import "ark_msgs/translation.proto";
+
+// A wrench representing force and torque.
+message Wrench {
+  Translation force = 1;
+  Translation torque = 2;
+}
