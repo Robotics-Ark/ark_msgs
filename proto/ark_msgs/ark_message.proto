@@ -5,7 +5,7 @@ package ark_msgs;
 // Ark message that is sent on each channel.
 message ArkMessage {
 
-  enum EndpointType {
+  enum EndPointType {
     UNSPECIFIED = 0;
     PUBLISHER = 1;
     SUBSCRIBER = 2;
@@ -21,6 +21,6 @@ message ArkMessage {
   uint64 recv_timestamp = 5;
 
   string msg_type = 6;
-  bytes payload = 4;
+  bytes payload = 7;
 
 }

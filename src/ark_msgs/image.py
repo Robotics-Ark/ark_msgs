@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from ark_msgs.registry import msgs
 
@@ -14,11 +15,13 @@ def from_array(cls, array: np.ndarray, encoding: str = "rgb8") -> Image:
     height, width = array.shape[:2]
     step = array.strides[0]
     data = array.tobytes()
+    is_bigendian = 1 if sys.byteorder == 'big' else 0
     return cls(
         height=height,
         width=width,
         encoding=encoding,
         step=step,
+        is_bigendian=is_bigendian,
         data=data
     )
 
