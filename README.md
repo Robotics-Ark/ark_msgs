@@ -27,22 +27,21 @@ Documentation for each message type supported in `ark_msgs` can be found below.
 
 Core messages used by Ark.
 
-### ArkMessage
+### Envelope
 
 This is the message that is actually sent across the network.
 
 ##### Fields
 
-- `EndPointType`: enum for end point types
 - `endpoint_type`: the end point type that is handling the message
+- `channel`: channel name that the mmessage was sent across
 - `src_node_name`: the name of the source node
 - `dst_node_name`: the name of the destination node
 - `sent_timestamp`: the timestamp when the message was sent
 - `recv_timestamp`: the timestamp when the message was recieved
 - `msg_type`: the type of the payload message as a string
 - `payload`: the payload of the message as bytes
-
-
+- `req_msg`: the request message, this is only used in RESPONSE types
 
 ##### Helpers
 
@@ -51,11 +50,9 @@ This is the message that is actually sent across the network.
 - `ArkMessage.from_sample(sample)`
   Retreive the `ArkMessage` from the given Zenoh sample.
 
-> > > > > > > Stashed changes
-
 ##### Usage
 
-`ArkMessage` is not designed for user code, so should not be used.
+`Envelope` is not designed for user code, so should not be used.
 
 ## Geometry
 
