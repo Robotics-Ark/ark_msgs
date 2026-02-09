@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package ark_msgs;
-
-// Command for a parallel gripper.
-message ParallelGripperCommand {
-  float width = 1; // Target width in meters
-  float max_force = 2; // Max force in Newtons
-}
