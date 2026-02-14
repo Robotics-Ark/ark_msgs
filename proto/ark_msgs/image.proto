@@ -6,47 +6,45 @@ import "ark_msgs/image_metadata.proto";
 
 // A generic image message, matching bot_core_image_t conventions.
 message Image {
-  int64 utime = 1; // microseconds since epoch
-
-  int32 width = 2;
-  int32 height = 3;
-  int32 row_stride = 4;
+  int32 width = 1;
+  int32 height = 2;
+  int32 row_stride = 3;
 
   enum PixelFormat {
-      PIXEL_FORMAT_UNKNOWN          = 0;
-      PIXEL_FORMAT_UYVY             = 1498831189;
-      PIXEL_FORMAT_YUYV             = 1448695129;
-      PIXEL_FORMAT_IYU1             = 827677001;
-      PIXEL_FORMAT_IYU2             = 844454217;
-      PIXEL_FORMAT_YUV420           = 842093913;
-      PIXEL_FORMAT_YUV411P          = 1345401140;
-      PIXEL_FORMAT_I420             = 808596553;
-      PIXEL_FORMAT_NV12             = 842094158;
-      PIXEL_FORMAT_GRAY             = 1497715271;
-      PIXEL_FORMAT_RGB              = 859981650;
-      PIXEL_FORMAT_BGR              = 861030210;
-      PIXEL_FORMAT_RGBA             = 876758866;
-      PIXEL_FORMAT_BGRA             = 877807426;
-      PIXEL_FORMAT_BAYER_BGGR       = 825770306;
-      PIXEL_FORMAT_BAYER_GBRG       = 844650584;
-      PIXEL_FORMAT_BAYER_GRBG       = 861427800;
-      PIXEL_FORMAT_BAYER_RGGB       = 878205016;
-      PIXEL_FORMAT_BE_BAYER16_BGGR  = 826360386;
-      PIXEL_FORMAT_BE_BAYER16_GBRG  = 843137602;
-      PIXEL_FORMAT_BE_BAYER16_GRBG  = 859914818;
-      PIXEL_FORMAT_BE_BAYER16_RGGB  = 876692034;
-      PIXEL_FORMAT_LE_BAYER16_BGGR  = 826360396;
-      PIXEL_FORMAT_LE_BAYER16_GBRG  = 843137612;
-      PIXEL_FORMAT_LE_BAYER16_GRBG  = 859914828;
-      PIXEL_FORMAT_LE_BAYER16_RGGB  = 876692044;
-      PIXEL_FORMAT_MJPEG            = 1196444237;
-      PIXEL_FORMAT_BE_GRAY16        = 357;
-      PIXEL_FORMAT_LE_GRAY16        = 909199180;
-      PIXEL_FORMAT_BE_RGB16         = 358;
-      PIXEL_FORMAT_LE_RGB16         = 1279412050;
-      PIXEL_FORMAT_BE_SIGNED_GRAY16 = 359;
-      PIXEL_FORMAT_BE_SIGNED_RGB16  = 360;
-      PIXEL_FORMAT_FLOAT_GRAY32     = 842221382;
+      UNKNOWN          = 0;
+      UYVY             = 1498831189;
+      YUYV             = 1448695129;
+      IYU1             = 827677001;
+      IYU2             = 844454217;
+      YUV420           = 842093913;
+      YUV411P          = 1345401140;
+      I420             = 808596553;
+      NV12             = 842094158;
+      GRAY             = 1497715271;
+      RGB              = 859981650;
+      BGR              = 861030210;
+      RGBA             = 876758866;
+      BGRA             = 877807426;
+      BAYER_BGGR       = 825770306;
+      BAYER_GBRG       = 844650584;
+      BAYER_GRBG       = 861427800;
+      BAYER_RGGB       = 878205016;
+      BE_BAYER16_BGGR  = 826360386;
+      BE_BAYER16_GBRG  = 843137602;
+      BE_BAYER16_GRBG  = 859914818;
+      BE_BAYER16_RGGB  = 876692034;
+      LE_BAYER16_BGGR  = 826360396;
+      LE_BAYER16_GBRG  = 843137612;
+      LE_BAYER16_GRBG  = 859914828;
+      LE_BAYER16_RGGB  = 876692044;
+      MJPEG            = 1196444237;
+      BE_GRAY16        = 357;
+      LE_GRAY16        = 909199180;
+      BE_RGB16         = 358;
+      LE_RGB16         = 1279412050;
+      BE_SIGNED_GRAY16 = 359;
+      BE_SIGNED_RGB16  = 360;
+      FLOAT_GRAY32     = 842221382;
   }
   PixelFormat pixel_format = 5;
 

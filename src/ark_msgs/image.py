@@ -18,23 +18,22 @@ def from_array(cls, array: np.ndarray, encoding: str = "rgb8") -> Image:
     data = array.tobytes()
     
     # Simple mapping for common formats
-    pixel_format = Image.PIXEL_FORMAT_UNKNOWN
-    if encoding == "rgb8" or encoding == "rgb":
-        pixel_format = Image.PIXEL_FORMAT_RGB
-    elif encoding == "bgr8" or encoding == "bgr":
-        pixel_format = Image.PIXEL_FORMAT_BGR
-    elif encoding == "mono8" or encoding == "gray":
-        pixel_format = Image.PIXEL_FORMAT_GRAY
-    elif encoding == "rgba8" or encoding == "rgba":
-        pixel_format = Image.PIXEL_FORMAT_RGBA
-    elif encoding == "bgra8" or encoding == "bgra":
-        pixel_format = Image.PIXEL_FORMAT_BGRA
-
-    # utime in microseconds
-    utime = int(time.time() * 1e6)
+    # Simple mapping for common formats
+    encoding_map = {
+        "rgb8": Image.RGB,
+        "rgb": Image.RGB,
+        "bgr8": Image.BGR,
+        "bgr": Image.BGR,
+        "mono8": Image.GRAY,
+        "gray": Image.GRAY,
+        "rgba8": Image.RGBA,
+        "rgba": Image.RGBA,
+        "bgra8": Image.BGRA,
+        "bgra": Image.BGRA,
+    }
+    pixel_format = encoding_map.get(encoding, Image.UNKNOWN)
 
     return cls(
-        utime=utime,
         height=height,
         width=width,
         pixel_format=pixel_format,
@@ -50,9 +49,9 @@ def as_array(self: Image, dtype=np.uint8) -> np.ndarray:
     shape = (self.height, self.width, -1)
     
     # Handle Mono/Gray special case for shape
-    if (self.pixel_format == Image.PIXEL_FORMAT_GRAY or 
-        self.pixel_format == Image.PIXEL_FORMAT_BE_GRAY16 or
-        self.pixel_format == Image.PIXEL_FORMAT_LE_GRAY16):
+    if (self.pixel_format == Image.GRAY or 
+        self.pixel_format == Image.BE_GRAY16 or
+        self.pixel_format == Image.LE_GRAY16):
          shape = (self.height, self.width)
     
     return np.frombuffer(self.data, dtype=dtype).reshape(shape)
@@ -102,17 +101,17 @@ def as_pil(self: Image):
     array = self.as_array()
     
     # Determine PIL mode from pixel format
-    if self.pixel_format == Image.PIXEL_FORMAT_GRAY:
+    if self.pixel_format == Image.GRAY:
         mode = "L"
-    elif self.pixel_format == Image.PIXEL_FORMAT_RGB:
+    elif self.pixel_format == Image.RGB:
         mode = "RGB"
-    elif self.pixel_format == Image.PIXEL_FORMAT_RGBA:
+    elif self.pixel_format == Image.RGBA:
         mode = "RGBA"
-    elif self.pixel_format == Image.PIXEL_FORMAT_BGR:
+    elif self.pixel_format == Image.BGR:
         # PIL doesn't have BGR mode, convert to RGB
         array = array[:, :, ::-1]
         mode = "RGB"
-    elif self.pixel_format == Image.PIXEL_FORMAT_BGRA:
+    elif self.pixel_format == Image.BGRA:
         # Convert BGRA to RGBA
         array = array[:, :, [2, 1, 0, 3]]
         mode = "RGBA"
@@ -122,50 +121,26 @@ def as_pil(self: Image):
     
     return PILImage.fromarray(array, mode=mode)
 
+def no_pil(*args, **kwargs):
+    raise RuntimeError("pillow is not installed. Install with: pip install ark_msgs[pil]")
+
 if not hasattr(Image, "from_array"):
     Image.from_array = from_array
 if not hasattr(Image, "as_array"):
     Image.as_array = as_array
-if not hasattr(Image, "from_pil"):
-    Image.from_pil = from_pil
-if not hasattr(Image, "as_pil"):
-    Image.as_pil = as_pil
 
-# Define constants matching proto/bot_core
-Image.PIXEL_FORMAT_UNKNOWN          = 0
-Image.PIXEL_FORMAT_UYVY             = 1498831189
-Image.PIXEL_FORMAT_YUYV             = 1448695129
-Image.PIXEL_FORMAT_IYU1             = 827677001
-Image.PIXEL_FORMAT_IYU2             = 844454217
-Image.PIXEL_FORMAT_YUV420           = 842093913
-Image.PIXEL_FORMAT_YUV411P          = 1345401140
-Image.PIXEL_FORMAT_I420             = 808596553
-Image.PIXEL_FORMAT_NV12             = 842094158
-Image.PIXEL_FORMAT_GRAY             = 1497715271
-Image.PIXEL_FORMAT_RGB              = 859981650
-Image.PIXEL_FORMAT_BGR              = 861030210
-Image.PIXEL_FORMAT_RGBA             = 876758866
-Image.PIXEL_FORMAT_BGRA             = 877807426
-Image.PIXEL_FORMAT_BAYER_BGGR       = 825770306
-Image.PIXEL_FORMAT_BAYER_GBRG       = 844650584
-Image.PIXEL_FORMAT_BAYER_GRBG       = 861427800
-Image.PIXEL_FORMAT_BAYER_RGGB       = 878205016
-Image.PIXEL_FORMAT_BE_BAYER16_BGGR  = 826360386
-Image.PIXEL_FORMAT_BE_BAYER16_GBRG  = 843137602
-Image.PIXEL_FORMAT_BE_BAYER16_GRBG  = 859914818
-Image.PIXEL_FORMAT_BE_BAYER16_RGGB  = 876692034
-Image.PIXEL_FORMAT_LE_BAYER16_BGGR  = 826360396
-Image.PIXEL_FORMAT_LE_BAYER16_GBRG  = 843137612
-Image.PIXEL_FORMAT_LE_BAYER16_GRBG  = 859914828
-Image.PIXEL_FORMAT_LE_BAYER16_RGGB  = 876692044
-Image.PIXEL_FORMAT_MJPEG            = 1196444237
-Image.PIXEL_FORMAT_BE_GRAY16        = 357
-Image.PIXEL_FORMAT_LE_GRAY16        = 909199180
-Image.PIXEL_FORMAT_BE_RGB16         = 358
-Image.PIXEL_FORMAT_LE_RGB16         = 1279412050
-Image.PIXEL_FORMAT_BE_SIGNED_GRAY16 = 359
-Image.PIXEL_FORMAT_BE_SIGNED_RGB16  = 360
-Image.PIXEL_FORMAT_FLOAT_GRAY32     = 842221382
+if _HAS_PIL:
+    if not hasattr(Image, "from_pil"):
+        Image.from_pil = from_pil
+    if not hasattr(Image, "as_pil"):
+        Image.as_pil = as_pil
+else:
+    Image.from_pil = no_pil
+    Image.as_pil = no_pil
+
+
+# Constants are now automatically available via the generated protobuf code
+# e.g. Image.RGB, Image.GRAY, etc.
 
 msgs.register_item(Image)
 

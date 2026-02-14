@@ -3,27 +3,32 @@ from ark_msgs.registry import msgs
 # joystick_pb2.py is generated from joystick.proto
 from .joystick_pb2 import Joystick
 
-def get(self: Joystick, name: str):
+def get_axis(self: Joystick, name: str) -> float:
     """
-    Get axis or button value by name.
-    Returns the value if found in axis_name or button_name arrays.
+    Get axis value by name.
+    Raises ValueError if name is not found, or IndexError if axis array is shorter than names.
     """
-    # Check axis names
-    for i, axis_name in enumerate(self.axis_name):
-        if axis_name == name:
-            if i < len(self.axis):
-                return self.axis[i]
-    
-    # Check button names
-    for i, button_name in enumerate(self.button_name):
-        if button_name == name:
-            if i < len(self.button):
-                return self.button[i]
-    
-    raise KeyError(f"Name '{name}' not found in axis_name or button_name")
+    try:
+        idx = self.axis_name.index(name)
+        return self.axis[idx]
+    except (ValueError, IndexError) as e:
+        raise KeyError(f"Axis '{name}' not available: {e}")
 
-if not hasattr(Joystick, "get"):
-    Joystick.get = get
+def get_button(self: Joystick, name: str) -> int:
+    """
+    Get button value by name.
+    Raises ValueError if name is not found, or IndexError if button array is shorter than names.
+    """
+    try:
+        idx = self.button_name.index(name)
+        return self.button[idx]
+    except (ValueError, IndexError) as e:
+        raise KeyError(f"Button '{name}' not available: {e}")
+
+if not hasattr(Joystick, "get_axis"):
+    Joystick.get_axis = get_axis
+if not hasattr(Joystick, "get_button"):
+    Joystick.get_button = get_button
 
 msgs.register_item(Joystick)
 
