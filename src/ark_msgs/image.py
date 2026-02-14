@@ -130,10 +130,8 @@ if not hasattr(Image, "as_array"):
     Image.as_array = as_array
 
 if _HAS_PIL:
-    if not hasattr(Image, "from_pil"):
-        Image.from_pil = from_pil
-    if not hasattr(Image, "as_pil"):
-        Image.as_pil = as_pil
+    Image.from_pil = from_pil
+    Image.as_pil = as_pil
 else:
     Image.from_pil = no_pil
     Image.as_pil = no_pil
