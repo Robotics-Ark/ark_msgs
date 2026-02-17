@@ -4,6 +4,15 @@ from ark_msgs.registry import msgs
 # image_pb2.py is generated from image.proto
 from .image_pb2 import Image
 
+# PixelFormat to PIL mode mapping
+_PIXEL_FORMAT_TO_PIL_MODE = {
+    Image.GRAY: "L",
+    Image.RGB: "RGB",
+    Image.RGBA: "RGBA",
+    Image.BGR: "BGR",
+    Image.BGRA: "BGRA",
+}
+
 # Optional PIL support
 try:
     from PIL import Image as PILImage
@@ -12,7 +21,7 @@ except ImportError:
     _HAS_PIL = False
 
 @classmethod
-def from_array(cls, array: np.ndarray, pixel_format: int | None = None) -> Image:
+def from_array(cls, array: np.ndarray, pixel_format: Image.PixelFormat | None = None) -> Image:
     """
     Initialize from a numpy array (e.g. from OpenCV).
     Assumes pixel_format matches array shape/type.
@@ -51,10 +60,10 @@ def as_array(self: Image) -> np.ndarray:
 
 
 def no_pil(*args, **kwargs):
-    raise RuntimeError("pillow is not installed. Install with: pip install ark_msgs[pil]")
+    raise RuntimeError("pillow is not installed. Install with: pip install -e .[pil] from the top level of ark_msgs.")
 
 @classmethod
-def from_pil(cls, pil_image: "PIL.Image.Image", pixel_format: int | None = None) -> Image:
+def from_pil(cls, pil_image: "PIL.Image.Image", pixel_format: Image.PixelFormat | None = None) -> Image:
     """
     Initialize from a PIL Image.
     Converts PIL Image to numpy array and uses from_array.
@@ -91,24 +100,17 @@ def as_pil(self: Image):
     array = self.as_array()
     
     # Determine PIL mode from pixel format
-    if self.pixel_format == Image.GRAY:
-        mode = "L"
-    elif self.pixel_format == Image.RGB:
-        mode = "RGB"
-    elif self.pixel_format == Image.RGBA:
-        mode = "RGBA"
-    elif self.pixel_format == Image.BGR:
+    mode = _PIXEL_FORMAT_TO_PIL_MODE.get(self.pixel_format, "RGB")
+    
+    if mode == "BGR":
         # PIL doesn't have BGR mode, convert to RGB
         array = array[:, :, ::-1]
         mode = "RGB"
-    elif self.pixel_format == Image.BGRA:
+    elif mode == "BGRA":
         # Convert BGRA to RGBA
         array = array[:, :, [2, 1, 0, 3]]
         mode = "RGBA"
-    else:
-        # Default to RGB
-        mode = "RGB"
-    
+        
     return PILImage.fromarray(array, mode=mode)
 
 
