@@ -1,48 +1,40 @@
-import sys
-import time
 import numpy as np
 from ark_msgs.registry import msgs
 
 # image_pb2.py is generated from image.proto
 from .image_pb2 import Image
 
+# Optional PIL support
+try:
+    from PIL import Image as PILImage
+    _HAS_PIL = True
+except ImportError:
+    _HAS_PIL = False
+
 @classmethod
-def from_array(cls, array: np.ndarray, encoding: str = "rgb8") -> Image:
+def from_array(cls, array: np.ndarray, pixel_format: int | None = None) -> Image:
     """
     Initialize from a numpy array (e.g. from OpenCV).
-    Assumes encoding matches array shape/type.
+    Assumes pixel_format matches array shape/type.
     """
     array = np.asarray(array)
     height, width = array.shape[:2]
     row_stride = array.strides[0]
     data = array.tobytes()
-    
-    # Simple mapping for common formats
-    # Simple mapping for common formats
-    encoding_map = {
-        "rgb8": Image.RGB,
-        "rgb": Image.RGB,
-        "bgr8": Image.BGR,
-        "bgr": Image.BGR,
-        "mono8": Image.GRAY,
-        "gray": Image.GRAY,
-        "rgba8": Image.RGBA,
-        "rgba": Image.RGBA,
-        "bgra8": Image.BGRA,
-        "bgra": Image.BGRA,
-    }
-    pixel_format = encoding_map.get(encoding, Image.UNKNOWN)
 
-    return cls(
+    obj = cls(
         height=height,
         width=width,
-        pixel_format=pixel_format,
         row_stride=row_stride,
         size=len(data),
         data=data
     )
+    if pixel_format is not None:
+        obj.pixel_format = pixel_format
+    
+    return obj
 
-def as_array(self: Image, dtype=np.uint8) -> np.ndarray:
+def as_array(self: Image) -> np.ndarray:
     """
     Convert to a numpy array.
     """
@@ -54,39 +46,37 @@ def as_array(self: Image, dtype=np.uint8) -> np.ndarray:
         self.pixel_format == Image.LE_GRAY16):
          shape = (self.height, self.width)
     
-    return np.frombuffer(self.data, dtype=dtype).reshape(shape)
+    return np.frombuffer(self.data, dtype=np.uint8).reshape(shape)
 
-# Optional PIL support
-try:
-    from PIL import Image as PILImage
-    _HAS_PIL = True
-except ImportError:
-    _HAS_PIL = False
+
+
+def no_pil(*args, **kwargs):
+    raise RuntimeError("pillow is not installed. Install with: pip install ark_msgs[pil]")
 
 @classmethod
-def from_pil(cls, pil_image, encoding: str = "rgb") -> Image:
+def from_pil(cls, pil_image: "PIL.Image.Image", pixel_format: int | None = None) -> Image:
     """
     Initialize from a PIL Image.
     Converts PIL Image to numpy array and uses from_array.
     Requires pillow to be installed.
     """
     if not _HAS_PIL:
-        raise ImportError("pillow is required for from_pil. Install with: pip install pillow")
+        no_pil()
     
     # Convert PIL image to numpy array
     array = np.array(pil_image)
     
-    # Determine encoding from PIL mode
-    if encoding == "auto":
-        mode_to_encoding = {
-            "RGB": "rgb",
-            "RGBA": "rgba",
-            "L": "gray",
-            "BGR": "bgr",
+    # Determine encoding from PIL mode if not provided
+    if pixel_format is None:
+        mode_to_format = {
+            "RGB": Image.RGB,
+            "RGBA": Image.RGBA,
+            "L": Image.GRAY,
+            "BGR": Image.BGR,
         }
-        encoding = mode_to_encoding.get(pil_image.mode, "rgb")
+        pixel_format = mode_to_format.get(pil_image.mode, Image.RGB)
     
-    return cls.from_array(array, encoding=encoding)
+    return cls.from_array(array, pixel_format=pixel_format)
 
 def as_pil(self: Image):
     """
@@ -95,7 +85,7 @@ def as_pil(self: Image):
     Requires pillow to be installed.
     """
     if not _HAS_PIL:
-        raise ImportError("pillow is required for as_pil. Install with: pip install pillow")
+        no_pil()
     
     # Convert to numpy array
     array = self.as_array()
@@ -121,8 +111,7 @@ def as_pil(self: Image):
     
     return PILImage.fromarray(array, mode=mode)
 
-def no_pil(*args, **kwargs):
-    raise RuntimeError("pillow is not installed. Install with: pip install ark_msgs[pil]")
+
 
 if not hasattr(Image, "from_array"):
     Image.from_array = from_array

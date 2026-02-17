@@ -5,6 +5,5 @@ package ark_msgs;
 // Image metadata key-value pair.
 message ImageMetadata {
   string key = 1;
-  int32 n = 2;
-  bytes value = 3;
+  bytes value = 2;
 }
