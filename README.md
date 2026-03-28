@@ -54,6 +54,29 @@ This is the message that is actually sent across the network.
 
 `Envelope` is not designed for user code, so should not be used.
 
+### String
+
+`String` represents string data.
+
+##### Fields
+
+- `data`: string data
+
+##### Helpers
+
+- `String.__str__()`  
+  Use `str()` in-built method to convert a `String` message to a string.
+
+##### Usage
+
+```python
+from ark_msgs import String
+
+s = String(data="hello, world")
+
+s_str = str(s) # s_str is "hello, world"
+```
+
 ## Geometry
 
 Common message types involving geometry calculations.
