@@ -5,15 +5,19 @@ from setuptools import setup
 from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.develop import develop as _develop
 
-# Clear up old generated protos before regenerating
-for pyi_file in Path("src/ark_msgs").rglob("*.pyi"):
-    if pyi_file.name.endswith("_pb2.pyi") or pyi_file.name.endswith("_pb2_grpc.pyi"):
-        pyi_file.unlink()
-for py_file in Path("src/ark_msgs").rglob("*.py"):
-    if py_file.name.endswith("_pb2.py") or py_file.name.endswith("_pb2_grpc.py"):
-        py_file.unlink()
+try:
+    from setuptools.command.editable_wheel import editable_wheel as _editable_wheel
+except ImportError:
+    _editable_wheel = None
 
 PKG_PROTO_ROOT = Path("proto")
+PKG_PY_ROOT = Path("src/ark_msgs")
+
+
+def clean_generated_protos() -> None:
+    for pattern in ("*_pb2.py", "*_pb2.pyi", "*_pb2_grpc.py", "*_pb2_grpc.pyi"):
+        for generated_file in PKG_PY_ROOT.rglob(pattern):
+            generated_file.unlink()
 
 
 def compile_protos() -> None:
@@ -21,13 +25,15 @@ def compile_protos() -> None:
     if not protos:
         return
 
+    clean_generated_protos()
+
     cmd = [
         sys.executable,
         "-m",
         "grpc_tools.protoc",
         f"-I{PKG_PROTO_ROOT}",
-        f"--python_out=src",
-        f"--pyi_out=src",
+        "--python_out=src",
+        "--pyi_out=src",
         *[str(p) for p in protos],
     ]
     subprocess.check_call(cmd)
@@ -45,6 +51,17 @@ class develop(_develop):
         super().run()
 
 
+cmdclass = {"build_py": build_py, "develop": develop}
+
+if _editable_wheel is not None:
+    class editable_wheel(_editable_wheel):
+        def run(self):
+            compile_protos()
+            super().run()
+
+    cmdclass["editable_wheel"] = editable_wheel
+
+
 setup(
-    cmdclass={"build_py": build_py, "develop": develop},
+    cmdclass=cmdclass,
 )
