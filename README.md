@@ -77,6 +77,29 @@ s = String(data="hello, world")
 s_str = str(s) # s_str is "hello, world"
 ```
 
+### Bool
+
+`Bool` represents boolean data.
+
+##### Fields
+
+- `data`: boolean data
+
+##### Helpers
+
+- `String.__bool__()`  
+  Use `bool()` in-built method to convert a `Bool` message to a boolean.
+
+##### Usage
+
+```python
+from ark_msgs import Bool
+
+b = Bool(data=True)
+
+b_bool = bool(s) # b_bool is True
+```
+
 ## Geometry
 
 Common message types involving geometry calculations.
