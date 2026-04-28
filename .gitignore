@@ -218,3 +218,5 @@ __marimo__/
 # Ignore generated protobuf files
 src/ark_msgs/*_pb2.py
 src/ark_msgs/*_pb2.pyi
+
+.codex

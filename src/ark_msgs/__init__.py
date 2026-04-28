@@ -12,3 +12,4 @@ from .joystick import Joystick
 from .imu import Imu
 from .motor_array_command import MotorArrayCommand
 from .envelope import Envelope
+from .boolean import Bool
