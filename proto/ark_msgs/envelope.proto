@@ -13,7 +13,7 @@ message Envelope {
   }
 
   message TraceMeta {
-    string env_name = 1;
+    string world_name = 1;
     string src_node_name = 2;
     SourceType src_type = 3;  
     uint64 sent_seq_index = 4;
